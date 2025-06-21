@@ -1,0 +1,490 @@
+{% extends "base.html" %}
+
+{% block title %}{{ spot.name }} - Batoko Chautari{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Hero Image -->
+            <div class="spot-hero position-relative mb-4">
+                {% set cover_photo = spot.get_approved_photos() | selectattr('is_cover_photo') | first %}
+                {% if cover_photo %}
+                    <img src="{{ url_for('uploaded_file', filename=cover_photo.filename) }}" 
+                         class="img-fluid w-100 rounded shadow" style="height: 400px; object-fit: cover;" 
+                         alt="{{ spot.name }}">
+                {% else %}
+                    <img src="https://pixabay.com/get/g22505a92c3abfad8230eb129dd903f5efb3a42fbe0b11d37407451176f59747f33b5f5d6f846e14b9992d3cafd2932298823d609ed13f338c839a2da716e4553_1280.jpg" 
+                         class="img-fluid w-100 rounded shadow" style="height: 400px; object-fit: cover;" 
+                         alt="{{ spot.name }}">
+                {% endif %}
+                
+                <div class="position-absolute top-0 start-0 p-3">
+                    <span class="badge bg-nature fs-6">{{ spot.spot_type.title() }}</span>
+                    {% if spot.road_status != 'unknown' %}
+                        <span class="badge bg-{{ ROAD_STATUS_COLORS.get(spot.road_status, 'secondary') }} fs-6 ms-2">
+                            Road: {{ spot.road_status.title() }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Spot Info -->
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h1 class="text-forest mb-2">{{ spot.name }}</h1>
+                    <div class="d-flex align-items-center text-muted mb-2">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        <span class="me-3">{{ spot.district }}</span>
+                        {% if spot.altitude %}
+                            <i class="fas fa-mountain me-2"></i>
+                            <span class="me-3">{{ spot.altitude }}m</span>
+                        {% endif %}
+                        {% if spot.difficulty_level %}
+                            <span class="badge bg-secondary">{{ spot.difficulty_level.title() }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% set rating = spot.get_average_rating() %}
+                    {% if rating > 0 %}
+                        <div class="rating mb-3">
+                            <span class="text-warning fs-5">{{ rating | round(1) }} ★</span>
+                            <span class="text-muted ms-2">({{ spot.reviews|length }} reviews)</span>
+                        </div>
+                    {% else %}
+                        <div class="rating mb-3">
+                            <span class="text-muted">No ratings yet</span>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                {% if current_user.is_authenticated %}
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('bookmark_spot', spot_id=spot.id) }}" 
+                       class="btn {% if user_bookmarked %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                        <i class="fas fa-bookmark me-1"></i>
+                        {% if user_bookmarked %}Bookmarked{% else %}Bookmark{% endif %}
+                    </a>
+                    {% if not user_visited %}
+                        <a href="{{ url_for('add_review', spot_id=spot.id) }}" class="btn btn-nature">
+                            <i class="fas fa-plus me-1"></i>Add Review
+                        </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Description -->
+            {% if spot.description %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title text-forest">
+                        <i class="fas fa-info-circle me-2"></i>About This Place
+                    </h5>
+                    <p class="card-text">{{ spot.description }}</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Additional Info -->
+            <div class="row g-3 mb-4">
+                {% if spot.best_season %}
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-calendar-alt text-nature fs-3 mb-2"></i>
+                            <h6 class="card-title">Best Season</h6>
+                            <p class="card-text">{{ spot.best_season }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if spot.entry_fee %}
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-money-bill-wave text-nature fs-3 mb-2"></i>
+                            <h6 class="card-title">Entry Fee</h6>
+                            <p class="card-text">NPR {{ spot.entry_fee }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Photo Gallery -->
+            {% if photos %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title text-forest mb-3">
+                        <i class="fas fa-images me-2"></i>Photo Gallery
+                    </h5>
+                    
+                    <div class="row g-2">
+                        {% for photo in photos[:8] %}
+                        <div class="col-lg-3 col-md-4 col-6">
+                            <img src="{{ url_for('uploaded_file', filename=photo.filename) }}" 
+                                 class="img-fluid rounded gallery-img" 
+                                 alt="{{ photo.caption or spot.name }}"
+                                 data-bs-toggle="modal" data-bs-target="#photoModal"
+                                 data-bs-img="{{ url_for('uploaded_file', filename=photo.filename) }}"
+                                 data-bs-caption="{{ photo.caption or spot.name }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if photos|length > 8 %}
+                    <div class="text-center mt-3">
+                        <button class="btn btn-outline-nature" id="loadMorePhotos">
+                            <i class="fas fa-plus me-1"></i>View More Photos
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Community Tips -->
+            {% if tips %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title text-forest mb-3">
+                        <i class="fas fa-lightbulb me-2"></i>Community Tips
+                    </h5>
+                    
+                    <div class="row g-3">
+                        {% for tip in tips %}
+                        <div class="col-md-6">
+                            <div class="tip-card p-3 border rounded">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge bg-nature me-2">{{ tip.tip_type.title() }}</span>
+                                    <small class="text-muted">by {{ tip.user.full_name or tip.user.username }}</small>
+                                </div>
+                                <p class="mb-0">{{ tip.content }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Add Tip Form -->
+            {% if current_user.is_authenticated %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title text-forest mb-3">
+                        <i class="fas fa-share me-2"></i>Share a Tip
+                    </h5>
+                    
+                    <form method="POST" action="{{ url_for('add_tip', spot_id=spot.id) }}">
+                        {{ tip_form.hidden_tag() }}
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                {{ tip_form.tip_type(class="form-select") }}
+                            </div>
+                            <div class="col-md-8">
+                                {{ tip_form.content(class="form-control", placeholder="Share your tip with the community...") }}
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            {{ tip_form.submit(class="btn btn-nature btn-sm") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Reviews Section -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-forest mb-4">
+                        <i class="fas fa-comments me-2"></i>Reviews ({{ reviews.total }})
+                    </h5>
+                    
+                    {% for review in reviews.items %}
+                    <div class="review-item border-bottom pb-3 mb-3">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <div class="bg-nature text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 50px; height: 50px;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="mb-1">{{ review.user.full_name or review.user.username }}</h6>
+                                        <div class="d-flex align-items-center">
+                                            <div class="text-warning me-2">
+                                                {{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}
+                                            </div>
+                                            <small class="text-muted">Visited {{ review.visit_date.strftime('%B %d, %Y') }}</small>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">{{ review.created_at.strftime('%b %d, %Y') }}</small>
+                                </div>
+                                
+                                {% if review.comment %}
+                                    <p class="mb-2">{{ review.comment }}</p>
+                                {% endif %}
+                                
+                                <!-- Review Photos -->
+                                {% if review.photos %}
+                                <div class="d-flex gap-2 flex-wrap">
+                                    {% for photo in review.photos[:4] %}
+                                        {% if photo.is_approved %}
+                                        <img src="{{ url_for('uploaded_file', filename=photo.filename) }}" 
+                                             class="rounded review-photo" 
+                                             style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+                                             data-bs-toggle="modal" data-bs-target="#photoModal"
+                                             data-bs-img="{{ url_for('uploaded_file', filename=photo.filename) }}"
+                                             data-bs-caption="{{ photo.caption or spot.name }}">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- Pagination -->
+                    {% if reviews.pages > 1 %}
+                    <nav aria-label="Reviews pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if reviews.has_prev %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('spot_detail', id=spot.id, page=reviews.prev_num) }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for page_num in reviews.iter_pages() %}
+                                {% if page_num %}
+                                    {% if page_num != reviews.page %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url_for('spot_detail', id=spot.id, page=page_num) }}">{{ page_num }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ page_num }}</span>
+                                        </li>
+                                    {% endif %}
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if reviews.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('spot_detail', id=spot.id, page=reviews.next_num) }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 80px;">
+                <!-- Weather Widget -->
+                {% if weather %}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-forest mb-3">
+                            <i class="fas fa-cloud-sun me-2"></i>Weather Forecast
+                        </h5>
+                        
+                        <!-- Current Weather -->
+                        <div class="text-center mb-3 p-3 bg-light rounded">
+                            <div class="d-flex align-items-center justify-content-center mb-2">
+                                <img src="https://openweathermap.org/img/wn/{{ weather.current.icon }}@2x.png" 
+                                     alt="{{ weather.current.description }}" style="width: 50px;">
+                                <span class="fs-3 fw-bold text-forest ms-2">{{ weather.current.temp }}°C</span>
+                            </div>
+                            <p class="mb-0 text-muted">{{ weather.current.description }}</p>
+                            <small class="text-muted">
+                                Humidity: {{ weather.current.humidity }}% • Wind: {{ weather.current.wind_speed }}m/s
+                            </small>
+                        </div>
+                        
+                        <!-- 3-Day Forecast -->
+                        <div class="row g-2">
+                            {% for day in weather.forecast %}
+                            <div class="col-4 text-center">
+                                <small class="text-muted d-block">{{ day.date }}</small>
+                                <img src="https://openweathermap.org/img/wn/{{ day.icon }}.png" 
+                                     alt="Weather" style="width: 30px;">
+                                <small class="d-block">{{ day.temp_max }}°/{{ day.temp_min }}°</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Quick Actions -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-forest mb-3">
+                            <i class="fas fa-compass me-2"></i>Quick Actions
+                        </h5>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="{{ maps_url }}" target="_blank" class="btn btn-outline-nature">
+                                <i class="fas fa-directions me-2"></i>Get Directions
+                            </a>
+                            
+                            <button class="btn btn-outline-secondary" onclick="shareSpot()">
+                                <i class="fas fa-share me-2"></i>Share This Place
+                            </button>
+                            
+                            {% if current_user.is_authenticated %}
+                                <!-- Road Status Update -->
+                                <button class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#roadUpdateModal">
+                                    <i class="fas fa-road me-1"></i>Update Road Status
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Location Info -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-forest mb-3">
+                            <i class="fas fa-map me-2"></i>Location Details
+                        </h5>
+                        
+                        <div class="location-info">
+                            <div class="mb-2">
+                                <strong>Coordinates:</strong><br>
+                                <small class="text-muted">{{ "%.6f"|format(spot.latitude) }}, {{ "%.6f"|format(spot.longitude) }}</small>
+                            </div>
+                            
+                            {% if spot.altitude %}
+                            <div class="mb-2">
+                                <strong>Altitude:</strong><br>
+                                <small class="text-muted">{{ spot.altitude }} meters</small>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="mb-2">
+                                <strong>District:</strong><br>
+                                <small class="text-muted">{{ spot.district }}</small>
+                            </div>
+                            
+                            {% if spot.last_road_update %}
+                            <div class="mb-2">
+                                <strong>Road Status:</strong><br>
+                                <span class="badge bg-{{ ROAD_STATUS_COLORS.get(spot.road_status, 'secondary') }}">
+                                    {{ spot.road_status.title() }}
+                                </span>
+                                <br><small class="text-muted">Updated {{ spot.last_road_update.strftime('%b %d, %Y') }}</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Photo Modal -->
+<div class="modal fade" id="photoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" class="img-fluid" id="modalImage" alt="">
+                <p class="mt-2 text-muted" id="modalCaption"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Road Update Modal -->
+{% if current_user.is_authenticated %}
+<div class="modal fade" id="roadUpdateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Road Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('update_road', spot_id=spot.id) }}">
+                {{ road_form.hidden_tag() }}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        {{ road_form.status.label(class="form-label") }}
+                        {{ road_form.status(class="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ road_form.description.label(class="form-label") }}
+                        {{ road_form.description(class="form-control", rows="3") }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    {{ road_form.submit(class="btn btn-nature") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Photo modal functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const photoModal = document.getElementById('photoModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalCaption = document.getElementById('modalCaption');
+    
+    photoModal.addEventListener('show.bs.modal', function(event) {
+        const trigger = event.relatedTarget;
+        modalImage.src = trigger.getAttribute('data-bs-img');
+        modalCaption.textContent = trigger.getAttribute('data-bs-caption');
+    });
+});
+
+// Share functionality
+function shareSpot() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ spot.name }} - Batoko Chautari',
+            text: 'Check out this amazing place in {{ spot.district }}!',
+            url: window.location.href
+        });
+    } else {
+        // Fallback to copying URL
+        navigator.clipboard.writeText(window.location.href).then(function() {
+            alert('Link copied to clipboard!');
+        });
+    }
+}
+
+// Gallery hover effects
+document.querySelectorAll('.gallery-img, .review-photo').forEach(img => {
+    img.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.05)';
+    });
+    
+    img.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1)';
+    });
+});
+</script>
+{% endblock %}

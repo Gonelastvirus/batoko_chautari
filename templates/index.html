@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section position-relative">
+    <div class="hero-overlay"></div>
+    <div class="hero-bg" style="background-image: url('https://pixabay.com/get/g74f8d8899920f490e23fb6f536439a03a63203da43033e4023044ca81b2db59eb3d8f99f8c7eb6f528a4c024cdf2653d29f6f23614ddbcacf2166e13e71effc8_1280.jpg');"></div>
+    <div class="container position-relative">
+        <div class="row min-vh-100 align-items-center">
+            <div class="col-lg-8 text-white">
+                <h1 class="display-3 fw-bold mb-4">
+                    <i class="fas fa-mountain text-nature me-3"></i>
+                    Batoko Chautari
+                </h1>
+                <p class="lead fs-3 mb-4">Your Rest Stop for Discovering Nepal's Natural Beauty</p>
+                <p class="fs-5 mb-5">Explore hidden gems, share authentic experiences, and connect with fellow travelers discovering Nepal's breathtaking landscapes.</p>
+                
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('discover') }}" class="btn btn-nature btn-lg px-4">
+                        <i class="fas fa-search me-2"></i>Start Exploring
+                    </a>
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg px-4">
+                        <i class="fas fa-user-plus me-2"></i>Join Community
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold text-forest mb-3">Why Choose Batoko Chautari?</h2>
+                <p class="lead text-muted">Authentic. Community-driven. Nepal-focused.</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-nature text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                            <i class="fas fa-map-marked-alt fs-3"></i>
+                        </div>
+                        <h5 class="card-title text-forest">Discover Hidden Gems</h5>
+                        <p class="card-text text-muted">Find verified nature spots with community reviews, real photos, and current road conditions.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-nature text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                            <i class="fas fa-cloud-sun fs-3"></i>
+                        </div>
+                        <h5 class="card-title text-forest">Real-time Weather</h5>
+                        <p class="card-text text-muted">Get current weather conditions and forecasts for your destination before you travel.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-nature text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                            <i class="fas fa-users fs-3"></i>
+                        </div>
+                        <h5 class="card-title text-forest">Community Driven</h5>
+                        <p class="card-text text-muted">Share your experiences, earn points, and help fellow travelers discover Nepal's beauty.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Spots Section -->
+{% if featured_spots %}
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-5 fw-bold text-forest mb-3">Featured Nature Spots</h2>
+                <p class="lead text-muted">Discover some of Nepal's most beautiful verified locations</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for spot in featured_spots[:6] %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow spot-card">
+                    <div class="card-img-container position-relative">
+                        {% set cover_photo = spot.get_approved_photos() | selectattr('is_cover_photo') | first %}
+                        {% if cover_photo %}
+                            <img src="{{ url_for('uploaded_file', filename=cover_photo.filename) }}" class="card-img-top spot-img" alt="{{ spot.name }}">
+                        {% else %}
+                            {% set fallback_images = [
+                                'https://pixabay.com/get/g22505a92c3abfad8230eb129dd903f5efb3a42fbe0b11d37407451176f59747f33b5f5d6f846e14b9992d3cafd2932298823d609ed13f338c839a2da716e4553_1280.jpg',
+                                'https://pixabay.com/get/g3f9a2d253be8c6145708cad97fd0d23dbb292bb52dc7183ae81c0e378b9291be7857bb2b56a6cc2ed3bd9ab639a7f826c106d5c109b1798293e6961b59b9b740_1280.jpg',
+                                'https://pixabay.com/get/g3c72006e64521d475829d81ba76905cd6100a09bf7f7dfcac3dae764972151545b96878c204517925a3f92307b79184c2d56a90c53e617f1abe5883dc033d2a4_1280.jpg'
+                            ] %}
+                            <img src="{{ fallback_images[loop.index0 % 3] }}" class="card-img-top spot-img" alt="{{ spot.name }}">
+                        {% endif %}
+                        
+                        <div class="spot-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-end">
+                            <div class="spot-info text-white p-3">
+                                <span class="badge bg-nature mb-2">{{ spot.spot_type.title() }}</span>
+                                <div class="rating">
+                                    {% set rating = spot.get_average_rating() %}
+                                    {% if rating > 0 %}
+                                        <span class="text-warning">{{ (rating | round(1) | string + ' ★') }}</span>
+                                    {% else %}
+                                        <span class="text-white-50">No ratings yet</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <h5 class="card-title text-forest">{{ spot.name }}</h5>
+                        <p class="card-text text-muted small">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ spot.district }}
+                            {% if spot.difficulty_level %}
+                                • <span class="badge bg-secondary">{{ spot.difficulty_level.title() }}</span>
+                            {% endif %}
+                        </p>
+                        {% if spot.description %}
+                            <p class="card-text">{{ spot.description[:100] }}{% if spot.description|length > 100 %}...{% endif %}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-footer bg-transparent border-0 pt-0">
+                        <a href="{{ url_for('spot_detail', id=spot.id) }}" class="btn btn-outline-nature w-100">
+                            <i class="fas fa-eye me-2"></i>Explore Spot
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{{ url_for('discover') }}" class="btn btn-nature btn-lg">
+                <i class="fas fa-search me-2"></i>Discover More Spots
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Community Section -->
+{% if recent_reviews or top_contributors %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-5 fw-bold text-forest mb-3">Community Highlights</h2>
+                <p class="lead text-muted">See what fellow travelers are sharing</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% if recent_reviews %}
+            <div class="col-lg-8">
+                <h4 class="text-forest mb-4">
+                    <i class="fas fa-comments me-2"></i>Recent Reviews
+                </h4>
+                
+                {% for review in recent_reviews[:3] %}
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <div class="bg-nature text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <h6 class="mb-0 me-2">{{ review.user.full_name or review.user.username }}</h6>
+                                    <div class="text-warning me-2">
+                                        {{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}
+                                    </div>
+                                    <small class="text-muted">{{ review.created_at.strftime('%b %d, %Y') }}</small>
+                                </div>
+                                <h6 class="text-forest">
+                                    <a href="{{ url_for('spot_detail', id=review.nature_spot.id) }}" class="text-decoration-none">
+                                        {{ review.nature_spot.name }}
+                                    </a>
+                                </h6>
+                                {% if review.comment %}
+                                    <p class="mb-0 text-muted">{{ review.comment[:120] }}{% if review.comment|length > 120 %}...{% endif %}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if top_contributors %}
+            <div class="col-lg-4">
+                <h4 class="text-forest mb-4">
+                    <i class="fas fa-trophy me-2"></i>Top Contributors
+                </h4>
+                
+                {% for user in top_contributors[:5] %}
+                <div class="d-flex align-items-center mb-3 p-3 bg-white rounded shadow-sm">
+                    <div class="flex-shrink-0">
+                        <div class="bg-nature text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h6 class="mb-0">{{ user.full_name or user.username }}</h6>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-nature me-2">{{ user.points }} pts</span>
+                            {% if user.badge_title %}
+                                <small class="text-muted">{{ user.badge_title }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="badge bg-light text-dark">#{{ loop.index }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('leaderboard') }}" class="btn btn-outline-nature btn-sm">
+                        <i class="fas fa-trophy me-1"></i>View Full Leaderboard
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Call to Action -->
+{% if not current_user.is_authenticated %}
+<section class="py-5 bg-forest text-white">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="display-5 fw-bold mb-4">Join Our Community</h2>
+                <p class="lead mb-4">Start your journey of discovery. Share your adventures, help fellow travelers, and earn recognition in the community.</p>
+                
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="{{ url_for('register') }}" class="btn btn-nature btn-lg px-4">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </a>
+                    <a href="{{ url_for('discover') }}" class="btn btn-outline-light btn-lg px-4">
+                        <i class="fas fa-search me-2"></i>Browse Spots
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects to feature cards
+    const featureCards = document.querySelectorAll('.feature-card');
+    featureCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Add hover effects to spot cards
+    const spotCards = document.querySelectorAll('.spot-card');
+    spotCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,497 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard - Batoko Chautari{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-nature text-white py-5">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold mb-3">
+                <i class="fas fa-trophy text-warning me-3"></i>Community Leaderboard
+            </h1>
+            <p class="lead">Celebrating our top contributors who help fellow travelers discover Nepal</p>
+        </div>
+    </div>
+</section>
+
+<div class="container py-5">
+    <!-- Top 3 Contributors -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-forest text-center mb-4">
+                <i class="fas fa-crown me-2"></i>Top Contributors
+            </h2>
+            
+            <div class="row justify-content-center">
+                {% for user in top_users[:3] %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card border-0 shadow-sm h-100 top-contributor-card position-relative">
+                        <!-- Rank Badge -->
+                        <div class="position-absolute top-0 start-50 translate-middle">
+                            {% if loop.index == 1 %}
+                                <div class="rank-badge rank-gold">
+                                    <i class="fas fa-crown"></i>
+                                    <span>1st</span>
+                                </div>
+                            {% elif loop.index == 2 %}
+                                <div class="rank-badge rank-silver">
+                                    <i class="fas fa-medal"></i>
+                                    <span>2nd</span>
+                                </div>
+                            {% else %}
+                                <div class="rank-badge rank-bronze">
+                                    <i class="fas fa-award"></i>
+                                    <span>3rd</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card-body text-center pt-5">
+                            <!-- Profile Avatar -->
+                            <div class="profile-avatar bg-nature text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                 style="width: 80px; height: 80px;">
+                                {% if user.profile_image %}
+                                    <img src="{{ url_for('uploaded_file', filename=user.profile_image) }}" 
+                                         class="rounded-circle" style="width: 70px; height: 70px; object-fit: cover;" 
+                                         alt="{{ user.full_name or user.username }}">
+                                {% else %}
+                                    <i class="fas fa-user fs-2"></i>
+                                {% endif %}
+                            </div>
+                            
+                            <h5 class="card-title text-forest">{{ user.full_name or user.username }}</h5>
+                            <p class="text-muted mb-2">@{{ user.username }}</p>
+                            
+                            <div class="points-display mb-3">
+                                <span class="badge bg-nature fs-5 px-3 py-2">{{ user.points }} Points</span>
+                            </div>
+                            
+                            {% if user.badge_title %}
+                                <div class="badge-display mb-3">
+                                    <span class="badge bg-warning text-dark">{{ user.badge_title }}</span>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="stats-mini">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Reviews</small>
+                                        <strong class="text-forest">{{ user.reviews|length }}</strong>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Photos</small>
+                                        <strong class="text-forest">{{ user.photos|selectattr('is_approved')|list|length }}</strong>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Visits</small>
+                                        <strong class="text-forest">{{ user.visits|length }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <ul class="nav nav-tabs nav-fill border-0 mb-4" id="leaderboardTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active leaderboard-tab" id="overall-tab" data-bs-toggle="tab" 
+                            data-bs-target="#overall" type="button" role="tab">
+                        <i class="fas fa-trophy me-2"></i>Overall Rankings
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link leaderboard-tab" id="reviewers-tab" data-bs-toggle="tab" 
+                            data-bs-target="#reviewers" type="button" role="tab">
+                        <i class="fas fa-star me-2"></i>Top Reviewers
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link leaderboard-tab" id="photographers-tab" data-bs-toggle="tab" 
+                            data-bs-target="#photographers" type="button" role="tab">
+                        <i class="fas fa-camera me-2"></i>Top Photographers
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="leaderboardTabContent">
+                <!-- Overall Rankings -->
+                <div class="tab-pane fade show active" id="overall" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="bg-forest text-white">
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>User</th>
+                                            <th>Badge</th>
+                                            <th>Points</th>
+                                            <th>Reviews</th>
+                                            <th>Photos</th>
+                                            <th>Joined</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in top_users %}
+                                        <tr class="user-row {% if user == current_user %}table-success{% endif %}">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if loop.index <= 3 %}
+                                                        {% if loop.index == 1 %}
+                                                            <i class="fas fa-crown text-warning me-2"></i>
+                                                        {% elif loop.index == 2 %}
+                                                            <i class="fas fa-medal text-secondary me-2"></i>
+                                                        {% else %}
+                                                            <i class="fas fa-award text-warning me-2" style="color: #cd7f32 !important;"></i>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    <strong class="fs-5">#{{ loop.index }}</strong>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="profile-avatar-sm bg-nature text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                         style="width: 40px; height: 40px;">
+                                                        {% if user.profile_image %}
+                                                            <img src="{{ url_for('uploaded_file', filename=user.profile_image) }}" 
+                                                                 class="rounded-circle" style="width: 35px; height: 35px; object-fit: cover;" 
+                                                                 alt="{{ user.full_name or user.username }}">
+                                                        {% else %}
+                                                            <i class="fas fa-user"></i>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold text-forest">{{ user.full_name or user.username }}</div>
+                                                        <small class="text-muted">@{{ user.username }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if user.badge_title %}
+                                                    <span class="badge bg-warning text-dark">{{ user.badge_title }}</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Newcomer</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-nature fs-6">{{ user.points }}</span>
+                                            </td>
+                                            <td>{{ user.reviews|length }}</td>
+                                            <td>{{ user.photos|selectattr('is_approved')|list|length }}</td>
+                                            <td>{{ user.created_at.strftime('%b %Y') }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Reviewers -->
+                <div class="tab-pane fade" id="reviewers" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="row g-4">
+                                {% for user in top_reviewers %}
+                                <div class="col-lg-6">
+                                    <div class="card border-0 bg-light h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rank-number bg-nature text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                     style="width: 40px; height: 40px;">
+                                                    <strong>#{{ loop.index }}</strong>
+                                                </div>
+                                                <div class="profile-avatar-sm bg-forest text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                     style="width: 50px; height: 50px;">
+                                                    {% if user.profile_image %}
+                                                        <img src="{{ url_for('uploaded_file', filename=user.profile_image) }}" 
+                                                             class="rounded-circle" style="width: 45px; height: 45px; object-fit: cover;" 
+                                                             alt="{{ user.full_name or user.username }}">
+                                                    {% else %}
+                                                        <i class="fas fa-user"></i>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1 text-forest">{{ user.full_name or user.username }}</h6>
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <i class="fas fa-star text-warning me-1"></i>
+                                                        <span class="fw-bold text-nature">{{ user.reviews|length }}</span>
+                                                        <small class="text-muted ms-1">reviews</small>
+                                                    </div>
+                                                    <small class="text-muted">{{ user.points }} total points</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Photographers -->
+                <div class="tab-pane fade" id="photographers" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="row g-4">
+                                {% for user in top_photographers %}
+                                <div class="col-lg-6">
+                                    <div class="card border-0 bg-light h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rank-number bg-nature text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                     style="width: 40px; height: 40px;">
+                                                    <strong>#{{ loop.index }}</strong>
+                                                </div>
+                                                <div class="profile-avatar-sm bg-forest text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                     style="width: 50px; height: 50px;">
+                                                    {% if user.profile_image %}
+                                                        <img src="{{ url_for('uploaded_file', filename=user.profile_image) }}" 
+                                                             class="rounded-circle" style="width: 45px; height: 45px; object-fit: cover;" 
+                                                             alt="{{ user.full_name or user.username }}">
+                                                    {% else %}
+                                                        <i class="fas fa-user"></i>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1 text-forest">{{ user.full_name or user.username }}</h6>
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <i class="fas fa-camera text-primary me-1"></i>
+                                                        <span class="fw-bold text-nature">{{ user.photos|selectattr('is_approved')|list|length }}</span>
+                                                        <small class="text-muted ms-1">approved photos</small>
+                                                    </div>
+                                                    <small class="text-muted">{{ user.points }} total points</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How Points Work -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body">
+                    <h4 class="text-forest mb-4 text-center">
+                        <i class="fas fa-question-circle me-2"></i>How Points Work
+                    </h4>
+                    <div class="row g-4">
+                        <div class="col-md-3 text-center">
+                            <div class="points-info">
+                                <div class="icon-circle bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                                     style="width: 50px; height: 50px;">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6 class="text-forest">Write Review</h6>
+                                <p class="text-muted mb-0">+10 points</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="points-info">
+                                <div class="icon-circle bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                                     style="width: 50px; height: 50px;">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                                <h6 class="text-forest">Upload Photo</h6>
+                                <p class="text-muted mb-0">+5 points</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="points-info">
+                                <div class="icon-circle bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                                     style="width: 50px; height: 50px;">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <h6 class="text-forest">Share Tip</h6>
+                                <p class="text-muted mb-0">+5 points</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="points-info">
+                                <div class="icon-circle bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                                     style="width: 50px; height: 50px;">
+                                    <i class="fas fa-road"></i>
+                                </div>
+                                <h6 class="text-forest">Update Road Status</h6>
+                                <p class="text-muted mb-0">+5 points</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <h6 class="text-forest mb-3">Achievement Badges</h6>
+                        <div class="d-flex flex-wrap justify-content-center gap-3">
+                            <span class="badge bg-secondary px-3 py-2">Newcomer (0-49 pts)</span>
+                            <span class="badge bg-info px-3 py-2">Wanderer (50-199 pts)</span>
+                            <span class="badge bg-primary px-3 py-2">Explorer (200-499 pts)</span>
+                            <span class="badge bg-warning px-3 py-2">Hidden Gem Hunter (500-999 pts)</span>
+                            <span class="badge bg-success px-3 py-2">Trailblazer (1000+ pts)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    {% if current_user.is_authenticated %}
+    <div class="text-center mt-5">
+        <div class="card border-0 shadow-sm bg-forest text-white">
+            <div class="card-body p-5">
+                <h3 class="mb-3">Ready to Climb the Leaderboard?</h3>
+                <p class="lead mb-4">Start exploring, reviewing, and sharing to earn points and help fellow travelers!</p>
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="{{ url_for('discover') }}" class="btn btn-nature btn-lg">
+                        <i class="fas fa-search me-2"></i>Discover Places
+                    </a>
+                    <a href="{{ url_for('profile') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-user me-2"></i>View My Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects to cards
+    const contributorCards = document.querySelectorAll('.top-contributor-card');
+    contributorCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Highlight current user row
+    const userRows = document.querySelectorAll('.user-row');
+    userRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            if (!this.classList.contains('table-success')) {
+                this.style.backgroundColor = '#f8f9fa';
+            }
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            if (!this.classList.contains('table-success')) {
+                this.style.backgroundColor = '';
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.rank-badge {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.rank-gold {
+    background: linear-gradient(135deg, #ffd700, #ffb347);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+.rank-silver {
+    background: linear-gradient(135deg, #c0c0c0, #a8a8a8);
+    box-shadow: 0 4px 15px rgba(192, 192, 192, 0.4);
+}
+
+.rank-bronze {
+    background: linear-gradient(135deg, #cd7f32, #a0522d);
+    box-shadow: 0 4px 15px rgba(205, 127, 50, 0.4);
+}
+
+.rank-badge i {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+}
+
+.top-contributor-card {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.top-contributor-card:hover {
+    border-color: var(--bs-success);
+}
+
+.leaderboard-tab {
+    border: none !important;
+    background: none !important;
+    color: #666 !important;
+    border-radius: 8px 8px 0 0 !important;
+    padding: 12px 20px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+}
+
+.leaderboard-tab:hover {
+    background-color: #f8f9fa !important;
+    color: #2d5016 !important;
+}
+
+.leaderboard-tab.active {
+    background-color: #2d5016 !important;
+    color: white !important;
+    border-color: #2d5016 !important;
+}
+
+.bg-gradient-nature {
+    background: linear-gradient(135deg, #2d5016, #4a7c59);
+}
+
+.user-row {
+    transition: all 0.3s ease;
+}
+
+.points-info {
+    transition: all 0.3s ease;
+}
+
+.points-info:hover {
+    transform: translateY(-3px);
+}
+
+.icon-circle {
+    transition: all 0.3s ease;
+}
+
+.icon-circle:hover {
+    transform: scale(1.1);
+}
+</style>
+{% endblock %}

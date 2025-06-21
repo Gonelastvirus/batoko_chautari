@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Batoko Chautari{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 col-md-4 bg-forest text-white min-vh-100">
+            <div class="p-4">
+                <h4 class="mb-4">
+                    <i class="fas fa-cogs me-2"></i>Admin Panel
+                </h4>
+                
+                <nav class="nav flex-column">
+                    <a class="nav-link text-white active" href="{{ url_for('admin_dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link text-white-50" href="{{ url_for('approve_photos') }}">
+                        <i class="fas fa-images me-2"></i>
+                        Photo Approvals
+                        {% if stats.pending_photos > 0 %}
+                            <span class="badge bg-warning ms-2">{{ stats.pending_photos }}</span>
+                        {% endif %}
+                    </a>
+                    <a class="nav-link text-white-50" href="#" onclick="alert('Feature coming soon!')">
+                        <i class="fas fa-flag me-2"></i>Reported Content
+                    </a>
+                    <a class="nav-link text-white-50" href="#" onclick="alert('Feature coming soon!')">
+                        <i class="fas fa-users me-2"></i>User Management
+                    </a>
+                    <a class="nav-link text-white-50" href="#" onclick="alert('Feature coming soon!')">
+                        <i class="fas fa-map-marker-alt me-2"></i>Spot Management
+                    </a>
+                    <hr class="my-3 border-white-50">
+                    <a class="nav-link text-white-50" href="{{ url_for('index') }}">
+                        <i class="fas fa-home me-2"></i>Back to Site
+                    </a>
+                </nav>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-lg-9 col-md-8">
+            <div class="p-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="text-forest mb-1">Admin Dashboard</h2>
+                        <p class="text-muted mb-0">Overview of platform activity and moderation tasks</p>
+                    </div>
+                    <div class="text-muted">
+                        <i class="fas fa-clock me-1"></i>
+                        Last updated: {{ moment().format('MMM DD, YYYY HH:mm') if moment else 'Now' }}
+                    </div>
+                </div>
+                
+                <!-- Statistics Cards -->
+                <div class="row g-4 mb-5">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card border-0 shadow-sm h-100 stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 50px; height: 50px;">
+                                        <i class="fas fa-users fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="mb-0 text-primary">{{ stats.total_users }}</h3>
+                                        <small class="text-muted">Total Users</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card border-0 shadow-sm h-100 stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 50px; height: 50px;">
+                                        <i class="fas fa-map-marker-alt fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="mb-0 text-success">{{ stats.total_spots }}</h3>
+                                        <small class="text-muted">Nature Spots</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card border-0 shadow-sm h-100 stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 50px; height: 50px;">
+                                        <i class="fas fa-star fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="mb-0 text-warning">{{ stats.total_reviews }}</h3>
+                                        <small class="text-muted">Reviews</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card border-0 shadow-sm h-100 stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 50px; height: 50px;">
+                                        <i class="fas fa-eye fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="mb-0 text-info">{{ stats.total_visits }}</h3>
+                                        <small class="text-muted">Total Visits</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pending Actions Alert -->
+                {% if stats.pending_photos > 0 %}
+                <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
+                    <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
+                    <div>
+                        <h6 class="alert-heading mb-1">Pending Moderation Tasks</h6>
+                        <p class="mb-2">There are {{ stats.pending_photos }} photos waiting for approval.</p>
+                        <a href="{{ url_for('approve_photos') }}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-images me-1"></i>Review Photos
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Recent Activity -->
+                <div class="row g-4">
+                    <!-- Recent Reviews -->
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-transparent border-0 pb-0">
+                                <h5 class="card-title text-forest mb-0">
+                                    <i class="fas fa-star me-2"></i>Recent Reviews
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if recent_reviews %}
+                                    <div class="list-group list-group-flush">
+                                        {% for review in recent_reviews %}
+                                        <div class="list-group-item border-0 px-0">
+                                            <div class="d-flex align-items-start">
+                                                <div class="flex-shrink-0">
+                                                    <div class="bg-nature text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                                         style="width: 40px; height: 40px;">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <h6 class="mb-1">{{ review.user.full_name or review.user.username }}</h6>
+                                                            <p class="mb-1 text-muted">
+                                                                <a href="{{ url_for('spot_detail', id=review.nature_spot.id) }}" 
+                                                                   class="text-decoration-none">{{ review.nature_spot.name }}</a>
+                                                            </p>
+                                                            <div class="text-warning">
+                                                                {{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}
+                                                            </div>
+                                                        </div>
+                                                        <small class="text-muted">{{ review.created_at.strftime('%b %d') }}</small>
+                                                    </div>
+                                                    {% if review.comment %}
+                                                        <p class="mb-0 small text-muted">{{ review.comment[:80] }}{% if review.comment|length > 80 %}...{% endif %}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-star text-muted mb-2" style="font-size: 2rem;"></i>
+                                        <p class="text-muted mb-0">No recent reviews</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pending Photos -->
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-transparent border-0 pb-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title text-forest mb-0">
+                                        <i class="fas fa-images me-2"></i>Pending Photos
+                                    </h5>
+                                    {% if pending_photos %}
+                                        <a href="{{ url_for('approve_photos') }}" class="btn btn-nature btn-sm">
+                                            <i class="fas fa-eye me-1"></i>View All
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% if pending_photos %}
+                                    <div class="row g-2">
+                                        {% for photo in pending_photos[:6] %}
+                                        <div class="col-4">
+                                            <div class="position-relative">
+                                                <img src="{{ url_for('uploaded_file', filename=photo.filename) }}" 
+                                                     class="img-fluid rounded pending-photo" 
+                                                     style="height: 80px; object-fit: cover; width: 100%;"
+                                                     alt="Pending photo"
+                                                     data-bs-toggle="modal" data-bs-target="#photoPreviewModal"
+                                                     data-bs-img="{{ url_for('uploaded_file', filename=photo.filename) }}"
+                                                     data-bs-id="{{ photo.id }}"
+                                                     data-bs-spot="{{ photo.nature_spot.name }}"
+                                                     data-bs-user="{{ photo.user.full_name or photo.user.username }}">
+                                                <div class="position-absolute top-0 end-0 p-1">
+                                                    <span class="badge bg-warning">New</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% if pending_photos|length > 6 %}
+                                        <div class="text-center mt-3">
+                                            <small class="text-muted">{{ pending_photos|length - 6 }} more photos pending...</small>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-check-circle text-success mb-2" style="font-size: 2rem;"></i>
+                                        <p class="text-muted mb-0">All photos reviewed!</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-forest mb-4">
+                                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                                </h5>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <a href="{{ url_for('approve_photos') }}" class="btn btn-outline-nature w-100">
+                                            <i class="fas fa-images d-block mb-2 fs-4"></i>
+                                            <span>Review Photos</span>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-outline-secondary w-100" onclick="alert('Feature coming soon!')">
+                                            <i class="fas fa-users d-block mb-2 fs-4"></i>
+                                            <span>Manage Users</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-outline-secondary w-100" onclick="alert('Feature coming soon!')">
+                                            <i class="fas fa-map-marker-alt d-block mb-2 fs-4"></i>
+                                            <span>Manage Spots</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-outline-secondary w-100" onclick="alert('Feature coming soon!')">
+                                            <i class="fas fa-chart-bar d-block mb-2 fs-4"></i>
+                                            <span>View Analytics</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Photo Preview Modal -->
+<div class="modal fade" id="photoPreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Photo Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" class="img-fluid mb-3" id="previewImage" alt="" style="max-height: 400px;">
+                <div class="mb-3">
+                    <p class="mb-1"><strong>Spot:</strong> <span id="previewSpot"></span></p>
+                    <p class="mb-0"><strong>Uploaded by:</strong> <span id="previewUser"></span></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" class="btn btn-success" id="approveBtn">
+                    <i class="fas fa-check me-1"></i>Approve
+                </a>
+                <a href="#" class="btn btn-danger" id="rejectBtn">
+                    <i class="fas fa-times me-1"></i>Reject
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Stats cards hover effect
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Photo preview modal
+    const photoPreviewModal = document.getElementById('photoPreviewModal');
+    const previewImage = document.getElementById('previewImage');
+    const previewSpot = document.getElementById('previewSpot');
+    const previewUser = document.getElementById('previewUser');
+    const approveBtn = document.getElementById('approveBtn');
+    const rejectBtn = document.getElementById('rejectBtn');
+    
+    photoPreviewModal.addEventListener('show.bs.modal', function(event) {
+        const trigger = event.relatedTarget;
+        const imgSrc = trigger.getAttribute('data-bs-img');
+        const photoId = trigger.getAttribute('data-bs-id');
+        const spotName = trigger.getAttribute('data-bs-spot');
+        const userName = trigger.getAttribute('data-bs-user');
+        
+        previewImage.src = imgSrc;
+        previewSpot.textContent = spotName;
+        previewUser.textContent = userName;
+        
+        approveBtn.href = `{{ url_for('approve_photo', photo_id=0) }}`.replace('0', photoId);
+        rejectBtn.href = `{{ url_for('reject_photo', photo_id=0) }}`.replace('0', photoId);
+    });
+    
+    // Pending photos hover effect
+    document.querySelectorAll('.pending-photo').forEach(img => {
+        img.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.05)';
+            this.style.cursor = 'pointer';
+        });
+        
+        img.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+});
+</script>
+
+<style>
+.stat-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.stat-card:hover {
+    border-left-color: #28a745;
+}
+
+.stat-icon {
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.1);
+}
+
+.pending-photo {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+}
+
+.list-group-item {
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+</style>
+{% endblock %}

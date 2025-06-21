@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}Discover Nature Spots - Batoko Chautari{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 col-md-4 bg-light border-end">
+            <div class="sticky-top" style="top: 80px;">
+                <div class="p-4">
+                    <h4 class="text-forest mb-4">
+                        <i class="fas fa-filter me-2"></i>Filter Spots
+                    </h4>
+                    
+                    <form method="GET" action="{{ url_for('discover') }}">
+                        <!-- Search -->
+                        <div class="mb-3">
+                            <label for="search" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ request.args.get('search', '') }}" 
+                                   placeholder="Search by name...">
+                        </div>
+                        
+                        <!-- District Filter -->
+                        <div class="mb-3">
+                            <label for="district" class="form-label">District</label>
+                            <select class="form-select" id="district" name="district">
+                                <option value="">All Districts</option>
+                                {% for district_code, district_name in form.district.choices[1:] %}
+                                    <option value="{{ district_code }}" 
+                                            {% if request.args.get('district') == district_code %}selected{% endif %}>
+                                        {{ district_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Type Filter -->
+                        <div class="mb-3">
+                            <label for="spot_type" class="form-label">Type</label>
+                            <select class="form-select" id="spot_type" name="spot_type">
+                                {% for type_code, type_name in form.spot_type.choices %}
+                                    <option value="{{ type_code }}" 
+                                            {% if request.args.get('spot_type') == type_code %}selected{% endif %}>
+                                        {{ type_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Difficulty Filter -->
+                        <div class="mb-3">
+                            <label for="difficulty" class="form-label">Difficulty</label>
+                            <select class="form-select" id="difficulty" name="difficulty">
+                                {% for diff_code, diff_name in form.difficulty.choices %}
+                                    <option value="{{ diff_code }}" 
+                                            {% if request.args.get('difficulty') == diff_code %}selected{% endif %}>
+                                        {{ diff_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Sort Options -->
+                        <div class="mb-3">
+                            <label for="sort" class="form-label">Sort By</label>
+                            <select class="form-select" id="sort" name="sort">
+                                <option value="name" {% if request.args.get('sort') == 'name' %}selected{% endif %}>Name</option>
+                                <option value="rating" {% if request.args.get('sort') == 'rating' %}selected{% endif %}>Rating</option>
+                                <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>Recently Added</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-nature">
+                                <i class="fas fa-search me-2"></i>Apply Filters
+                            </button>
+                            <a href="{{ url_for('discover') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-undo me-2"></i>Clear All
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-lg-9 col-md-8">
+            <div class="p-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="text-forest mb-1">Discover Nature Spots</h2>
+                        <p class="text-muted mb-0">
+                            {% if total_spots %}
+                                Showing {{ spots|length }} of {{ total_spots }} spots
+                            {% else %}
+                                No spots found matching your criteria
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary" id="gridView" title="Grid View">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary" id="listView" title="List View">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Spots Grid -->
+                {% if spots %}
+                <div class="row g-4" id="spotsContainer">
+                    {% for spot in spots %}
+                    <div class="col-lg-4 col-md-6 spot-item">
+                        <div class="card h-100 border-0 shadow-sm spot-card">
+                            <div class="card-img-container position-relative">
+                                {% set cover_photo = spot.get_approved_photos() | selectattr('is_cover_photo') | first %}
+                                {% if cover_photo %}
+                                    <img src="{{ url_for('uploaded_file', filename=cover_photo.filename) }}" 
+                                         class="card-img-top spot-img" alt="{{ spot.name }}">
+                                {% else %}
+                                    {% set fallback_images = [
+                                        'https://pixabay.com/get/g22505a92c3abfad8230eb129dd903f5efb3a42fbe0b11d37407451176f59747f33b5f5d6f846e14b9992d3cafd2932298823d609ed13f338c839a2da716e4553_1280.jpg',
+                                        'https://pixabay.com/get/g3f9a2d253be8c6145708cad97fd0d23dbb292bb52dc7183ae81c0e378b9291be7857bb2b56a6cc2ed3bd9ab639a7f826c106d5c109b1798293e6961b59b9b740_1280.jpg',
+                                        'https://pixabay.com/get/g3c72006e64521d475829d81ba76905cd6100a09bf7f7dfcac3dae764972151545b96878c204517925a3f92307b79184c2d56a90c53e617f1abe5883dc033d2a4_1280.jpg',
+                                        'https://pixabay.com/get/g2de6ee10478d559c6a1baada9b89af8edcc91df27282c9634907cc691275571dc99166cb09fb8110267c4edfe95fb16438c9e53a2635e06e21149131ee0eefdb_1280.jpg'
+                                    ] %}
+                                    <img src="{{ fallback_images[loop.index0 % 4] }}" 
+                                         class="card-img-top spot-img" alt="{{ spot.name }}">
+                                {% endif %}
+                                
+                                <div class="spot-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-end">
+                                    <div class="spot-info text-white p-3 w-100">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-nature">{{ spot.spot_type.title() }}</span>
+                                            {% if spot.road_status != 'unknown' %}
+                                                <span class="badge bg-{{ ROAD_STATUS_COLORS.get(spot.road_status, 'secondary') }}">
+                                                    {{ spot.road_status.title() }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="rating mt-2">
+                                            {% set rating = spot.get_average_rating() %}
+                                            {% if rating > 0 %}
+                                                <span class="text-warning">{{ (rating | round(1) | string + ' ★') }}</span>
+                                                <small class="text-white-50">({{ spot.reviews|length }} reviews)</small>
+                                            {% else %}
+                                                <span class="text-white-50">No ratings yet</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <h5 class="card-title text-forest">{{ spot.name }}</h5>
+                                <p class="card-text text-muted small mb-2">
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ spot.district }}
+                                    {% if spot.altitude %}
+                                        • {{ spot.altitude }}m
+                                    {% endif %}
+                                    {% if spot.difficulty_level %}
+                                        • <span class="badge bg-secondary">{{ spot.difficulty_level.title() }}</span>
+                                    {% endif %}
+                                </p>
+                                {% if spot.description %}
+                                    <p class="card-text">{{ spot.description[:80] }}{% if spot.description|length > 80 %}...{% endif %}</p>
+                                {% endif %}
+                                
+                                {% if spot.best_season %}
+                                    <p class="card-text small text-success">
+                                        <i class="fas fa-calendar-alt me-1"></i>Best: {{ spot.best_season }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="card-footer bg-transparent border-0 pt-0">
+                                <div class="d-grid gap-2">
+                                    <a href="{{ url_for('spot_detail', id=spot.id) }}" class="btn btn-nature">
+                                        <i class="fas fa-eye me-2"></i>Explore Details
+                                    </a>
+                                    {% if current_user.is_authenticated %}
+                                        <a href="{{ url_for('bookmark_spot', spot_id=spot.id) }}" 
+                                           class="btn btn-outline-secondary btn-sm">
+                                            <i class="fas fa-bookmark me-1"></i>Bookmark
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if has_next or has_prev %}
+                <nav aria-label="Spots pagination" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('discover', page=page-1, **request.args) }}">
+                                    <i class="fas fa-chevron-left me-1"></i>Previous
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">Page {{ page }}</span>
+                        </li>
+                        
+                        {% if has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('discover', page=page+1, **request.args) }}">
+                                    Next<i class="fas fa-chevron-right ms-1"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                
+                {% else %}
+                <!-- No Results -->
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-search text-muted" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No spots found</h4>
+                    <p class="text-muted mb-4">Try adjusting your filters or search terms.</p>
+                    <a href="{{ url_for('discover') }}" class="btn btn-nature">
+                        <i class="fas fa-undo me-2"></i>Clear Filters
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const gridBtn = document.getElementById('gridView');
+    const listBtn = document.getElementById('listView');
+    const container = document.getElementById('spotsContainer');
+    const spotItems = document.querySelectorAll('.spot-item');
+    
+    // Grid view (default)
+    gridBtn.addEventListener('click', function() {
+        container.className = 'row g-4';
+        spotItems.forEach(item => {
+            item.className = 'col-lg-4 col-md-6 spot-item';
+        });
+        gridBtn.classList.add('btn-secondary');
+        gridBtn.classList.remove('btn-outline-secondary');
+        listBtn.classList.add('btn-outline-secondary');
+        listBtn.classList.remove('btn-secondary');
+    });
+    
+    // List view
+    listBtn.addEventListener('click', function() {
+        container.className = 'row g-3';
+        spotItems.forEach(item => {
+            item.className = 'col-12 spot-item';
+        });
+        listBtn.classList.add('btn-secondary');
+        listBtn.classList.remove('btn-outline-secondary');
+        gridBtn.classList.add('btn-outline-secondary');
+        gridBtn.classList.remove('btn-secondary');
+    });
+    
+    // Set initial state
+    gridBtn.classList.add('btn-secondary');
+    gridBtn.classList.remove('btn-outline-secondary');
+    
+    // Add hover effects
+    const spotCards = document.querySelectorAll('.spot-card');
+    spotCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

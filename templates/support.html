@@ -1,0 +1,396 @@
+{% extends "base.html" %}
+
+{% block title %}Support Us - Batoko Chautari{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-forest text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-heart text-nature me-3"></i>Support Batoko Chautari
+                </h1>
+                <p class="lead mb-4">Help us keep Nepal's natural beauty discoverable for everyone</p>
+                <p class="fs-5">Your support helps us maintain the platform, verify content, and connect travelers with Nepal's hidden gems.</p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <div class="support-icon bg-nature rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 120px; height: 120px;">
+                    <i class="fas fa-mountain fs-1 text-white"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Donate Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm mb-5">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="icon-circle bg-nature text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                 style="width: 80px; height: 80px;">
+                                <i class="fas fa-question fs-2"></i>
+                            </div>
+                            <h2 class="text-forest">Why Donate?</h2>
+                        </div>
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <div class="icon-sm bg-nature text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 40px; height: 40px; min-width: 40px;">
+                                        <i class="fas fa-heart"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-forest">Passion Project</h5>
+                                        <p class="text-muted mb-0">Batoko Chautari is built with love for Nepal and its natural beauty. We're not a commercial venture, but a community-driven platform.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <div class="icon-sm bg-nature text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 40px; height: 40px; min-width: 40px;">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-forest">Community First</h5>
+                                        <p class="text-muted mb-0">Every rupee goes directly into improving the platform and helping Nepali explorers discover amazing places safely.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <div class="icon-sm bg-nature text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 40px; height: 40px; min-width: 40px;">
+                                        <i class="fas fa-server"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-forest">Hosting Costs</h5>
+                                        <p class="text-muted mb-0">We need to cover server costs, database hosting, and domain maintenance to keep the platform running smoothly.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <div class="icon-sm bg-nature text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 40px; height: 40px; min-width: 40px;">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-forest">Quality Control</h5>
+                                        <p class="text-muted mb-0">Your support helps us moderate content, verify photos, and ensure the information you see is authentic and helpful.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-success mt-4">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-info-circle me-2"></i>100% Transparency
+                            </h6>
+                            <p class="mb-0">All donations go directly to platform maintenance and improvement. We're committed to keeping Batoko Chautari free for all travelers.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Payment Options Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="icon-circle bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                 style="width: 80px; height: 80px;">
+                                <i class="fas fa-mobile-alt fs-2"></i>
+                            </div>
+                            <h2 class="text-forest">Easy Payment Options</h2>
+                            <p class="text-muted">Choose your preferred way to support us</p>
+                        </div>
+                        
+                        <div class="row g-4">
+                            <!-- eSewa Option -->
+                            <div class="col-md-6">
+                                <div class="payment-option text-center p-4 border rounded h-100">
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTAwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjQwIiByeD0iNCIgZmlsbD0iIzAwNzA0YSIvPgo8dGV4dCB4PSI1MCIgeT0iMjUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5lU2V3YTwvdGV4dD4KPHN2Zz4K" 
+                                         alt="eSewa" class="mb-3">
+                                    <h5 class="text-forest mb-3">eSewa Payment</h5>
+                                    <div class="esewa-info bg-light p-3 rounded mb-3">
+                                        <h6 class="text-success mb-2">
+                                            <i class="fas fa-mobile-alt me-2"></i>eSewa Number
+                                        </h6>
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <code class="fs-5 text-forest bg-white px-3 py-2 rounded border" id="esewaNumber">9845141603</code>
+                                            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('esewaNumber')">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted small">Send any amount to help us maintain the platform</p>
+                                </div>
+                            </div>
+                            
+                            <!-- QR Code Option -->
+                            <div class="col-md-6">
+                                <div class="payment-option text-center p-4 border rounded h-100">
+                                    <div class="qr-code bg-white border rounded p-3 mb-3 d-inline-block">
+                                        <!-- Placeholder QR Code -->
+                                        <svg width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <!-- QR Code pattern -->
+                                            <rect width="150" height="150" fill="white"/>
+                                            <!-- Corner squares -->
+                                            <rect x="10" y="10" width="30" height="30" fill="black"/>
+                                            <rect x="110" y="10" width="30" height="30" fill="black"/>
+                                            <rect x="10" y="110" width="30" height="30" fill="black"/>
+                                            <!-- Inner squares -->
+                                            <rect x="15" y="15" width="20" height="20" fill="white"/>
+                                            <rect x="115" y="15" width="20" height="20" fill="white"/>
+                                            <rect x="15" y="115" width="20" height="20" fill="white"/>
+                                            <rect x="20" y="20" width="10" height="10" fill="black"/>
+                                            <rect x="120" y="20" width="10" height="10" fill="black"/>
+                                            <rect x="20" y="120" width="10" height="10" fill="black"/>
+                                            <!-- Random pattern for QR effect -->
+                                            <rect x="50" y="20" width="5" height="5" fill="black"/>
+                                            <rect x="60" y="20" width="5" height="5" fill="black"/>
+                                            <rect x="70" y="25" width="5" height="5" fill="black"/>
+                                            <rect x="50" y="30" width="5" height="5" fill="black"/>
+                                            <rect x="75" y="35" width="5" height="5" fill="black"/>
+                                            <rect x="45" y="40" width="5" height="5" fill="black"/>
+                                            <rect x="65" y="45" width="5" height="5" fill="black"/>
+                                            <rect x="55" y="50" width="5" height="5" fill="black"/>
+                                            <rect x="80" y="50" width="5" height="5" fill="black"/>
+                                            <rect x="40" y="60" width="5" height="5" fill="black"/>
+                                            <rect x="70" y="65" width="5" height="5" fill="black"/>
+                                            <rect x="85" y="70" width="5" height="5" fill="black"/>
+                                            <rect x="50" y="75" width="5" height="5" fill="black"/>
+                                            <rect x="60" y="80" width="5" height="5" fill="black"/>
+                                            <rect x="75" y="85" width="5" height="5" fill="black"/>
+                                            <rect x="45" y="90" width="5" height="5" fill="black"/>
+                                            <rect x="65" y="95" width="5" height="5" fill="black"/>
+                                        </svg>
+                                    </div>
+                                    <h5 class="text-forest mb-3">QR Code</h5>
+                                    <p class="text-muted">Scan with any payment app to send instant support</p>
+                                    <div class="mt-3">
+                                        <button class="btn btn-outline-nature btn-sm" onclick="downloadQR()">
+                                            <i class="fas fa-download me-1"></i>Download QR
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Suggested Amounts -->
+                        <div class="text-center mt-4">
+                            <h6 class="text-forest mb-3">Suggested Support Amounts</h6>
+                            <div class="d-flex flex-wrap justify-content-center gap-2">
+                                <span class="badge bg-nature fs-6 px-3 py-2">NPR 50</span>
+                                <span class="badge bg-nature fs-6 px-3 py-2">NPR 100</span>
+                                <span class="badge bg-nature fs-6 px-3 py-2">NPR 250</span>
+                                <span class="badge bg-nature fs-6 px-3 py-2">NPR 500</span>
+                                <span class="badge bg-outline-nature fs-6 px-3 py-2 border border-nature text-forest">Custom Amount</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Other Ways to Support -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="text-forest">Other Ways to Support</h2>
+                <p class="lead text-muted">Can't donate? Here are other ways to help our community grow</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center support-card">
+                    <div class="card-body p-4">
+                        <div class="icon-circle bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fas fa-share-alt fs-3"></i>
+                        </div>
+                        <h5 class="card-title text-forest">Share the Platform</h5>
+                        <p class="card-text text-muted">Tell your friends and fellow travelers about Batoko Chautari. Word of mouth is our best marketing!</p>
+                        <div class="mt-3">
+                            <button class="btn btn-outline-primary btn-sm me-2" onclick="shareOnFacebook()">
+                                <i class="fab fa-facebook me-1"></i>Facebook
+                            </button>
+                            <button class="btn btn-outline-info btn-sm" onclick="shareOnTwitter()">
+                                <i class="fab fa-twitter me-1"></i>Twitter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center support-card">
+                    <div class="card-body p-4">
+                        <div class="icon-circle bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fas fa-pen fs-3"></i>
+                        </div>
+                        <h5 class="card-title text-forest">Write Reviews</h5>
+                        <p class="card-text text-muted">Share your travel experiences and photos. Quality content is what makes our platform valuable for everyone.</p>
+                        <div class="mt-3">
+                            <a href="{{ url_for('discover') }}" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-search me-1"></i>Find Places to Review
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center support-card">
+                    <div class="card-body p-4">
+                        <div class="icon-circle bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fas fa-users fs-3"></i>
+                        </div>
+                        <h5 class="card-title text-forest">Build Community</h5>
+                        <p class="card-text text-muted">Help other travelers by answering questions, sharing tips, and keeping road status updated.</p>
+                        <div class="mt-3">
+                            <a href="{{ url_for('leaderboard') }}" class="btn btn-outline-warning btn-sm">
+                                <i class="fas fa-trophy me-1"></i>View Leaderboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Thank You Section -->
+<section class="py-5 bg-forest text-white">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="display-5 fw-bold mb-4">
+                    <i class="fas fa-heart text-nature me-3"></i>Thank You!
+                </h2>
+                <p class="lead mb-4">Every contribution, big or small, helps us keep Nepal's natural beauty accessible to everyone.</p>
+                <p class="fs-5">Together, we're building a community that celebrates and preserves Nepal's incredible landscapes for future generations.</p>
+                
+                <div class="mt-4">
+                    <a href="{{ url_for('index') }}" class="btn btn-nature btn-lg me-3">
+                        <i class="fas fa-home me-2"></i>Back to Home
+                    </a>
+                    <a href="{{ url_for('discover') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-search me-2"></i>Start Exploring
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent;
+    
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success feedback
+        const button = element.nextElementSibling;
+        const originalIcon = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check text-success"></i>';
+        button.classList.add('btn-success');
+        button.classList.remove('btn-outline-secondary');
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+            button.innerHTML = originalIcon;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-secondary');
+        }, 2000);
+    }).catch(function(err) {
+        alert('Could not copy to clipboard. Please copy manually: ' + text);
+    });
+}
+
+function downloadQR() {
+    // In a real implementation, this would generate and download the actual QR code
+    alert('QR code download feature will be available soon!');
+}
+
+function shareOnFacebook() {
+    const url = encodeURIComponent(window.location.origin);
+    const text = encodeURIComponent('Check out Batoko Chautari - Your rest stop for discovering Nepal\'s natural beauty!');
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
+}
+
+function shareOnTwitter() {
+    const url = encodeURIComponent(window.location.origin);
+    const text = encodeURIComponent('Discover Nepal\'s hidden gems with Batoko Chautari - a community-driven platform for nature lovers!');
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+}
+
+// Add hover effects to support cards
+document.addEventListener('DOMContentLoaded', function() {
+    const supportCards = document.querySelectorAll('.support-card');
+    supportCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    const paymentOptions = document.querySelectorAll('.payment-option');
+    paymentOptions.forEach(option => {
+        option.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.02)';
+        });
+        
+        option.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+});
+</script>
+
+<style>
+.support-card {
+    transition: all 0.3s ease;
+}
+
+.payment-option {
+    transition: all 0.3s ease;
+}
+
+.icon-circle {
+    transition: all 0.3s ease;
+}
+
+.icon-sm {
+    transition: all 0.3s ease;
+}
+</style>
+{% endblock %}

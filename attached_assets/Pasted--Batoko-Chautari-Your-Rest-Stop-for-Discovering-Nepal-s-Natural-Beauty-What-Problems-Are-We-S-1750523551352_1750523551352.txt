@@ -1,0 +1,99 @@
+🌿 Batoko Chautari
+“Your Rest Stop for Discovering Nepal’s Natural Beauty”
+🎯 What Problems Are We Solving?
+
+    Gen Z often wants a peaceful escape into nature, but they face friction:
+
+    They don’t know where to go near them
+
+    They're unsure about road safety, landslides, or transport
+
+    No reliable weather updates for off-grid places
+
+    Can't trust Google reviews/photos — often outdated or fake
+
+    No system to ensure honest reviews or user accountability
+
+    Forget where they’ve already visited and wish to track it
+
+🔑 Core Features
+🗺️ 1. Nature Spot Discovery
+
+    Filter by distance, type (hill, lake, forest, waterfall), or district
+
+    Discover hidden gems verified by the community
+
+🛣️ 2. Road Status Updates
+
+    Show current road condition: smooth, damaged, under construction, landslide-prone
+
+    Based on user reports or official sources
+
+🌦️ 3. Weather Info
+
+    Real-time weather for each place using Weather API
+
+📌 4. Visit Lock System
+
+    Users must review their last visited spot (with 2+ photos) before exploring more
+
+    Ensures everyone contributes to the community
+
+⭐ 5. Review + Photo Upload
+
+    Give star rating, comment, and upload minimum 2 photos
+
+    Admin approves photos before public display (to ensure quality)
+
+🖼️ 6. Gallery of Verified Photos
+
+    Only approved user photos are shown to help future explorers trust what they see
+
+👤 7. Profile & Visit History
+
+    View all places visited, with review dates
+
+    Bookmark places for later trips
+
+💡 Bonus Features
+🧭 Route & Directions
+
+    See travel path on the map with time, distance, and Google Maps link
+
+🧳 Community Packing Tips
+
+    Users can share what to bring, best season, or secret local food spots
+
+📲 One‑Tap Social Sharing
+
+    Share your trip on Instagram, Facebook, or WhatsApp with auto-generated link or screenshot
+
+🏆 Leaderboard
+
+    Show top contributors: those who submit best reviews/photos
+
+    Gamify it with badges and titles like “Trailblazer,” “Hidden Gem Hunter,” etc.
+
+❤️ Support Button (on Home/Footer)
+
+    A small floating "Support Us ❤️" button
+
+    On click, redirects to a Support Page with:
+
+        📝 Why Donate? — A card explaining:
+
+            “Batoko Chautari is a passion project built to help Nepali explorers like you discover peaceful places. We rely on your support to cover hosting, data, and moderation.”
+
+        📱 Payment Options — A second card with:
+
+            eSewa number: 9845141603
+
+            QR code for instant payment
+
+🪧 Tagline Ideas
+
+    "Batoko Chautari – Pause, Explore, Share."
+
+    "Your digital rest stop before the next journey."
+
+    "Where real travelers share real Nepal."

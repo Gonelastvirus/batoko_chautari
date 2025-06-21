@@ -1,0 +1,533 @@
+{% extends "base.html" %}
+
+{% block title %}Photo Approvals - Admin - Batoko Chautari{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 col-md-4 bg-forest text-white min-vh-100">
+            <div class="p-4">
+                <h4 class="mb-4">
+                    <i class="fas fa-cogs me-2"></i>Admin Panel
+                </h4>
+                
+                <nav class="nav flex-column">
+                    <a class="nav-link text-white-50" href="{{ url_for('admin_dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link text-white active" href="{{ url_for('approve_photos') }}">
+                        <i class="fas fa-images me-2"></i>Photo Approvals
+                    </a>
+                    <a class="nav-link text-white-50" href="#" onclick="alert('Feature coming soon!')">
+                        <i class="fas fa-flag me-2"></i>Reported Content
+                    </a>
+                    <a class="nav-link text-white-50" href="#" onclick="alert('Feature coming soon!')">
+                        <i class="fas fa-users me-2"></i>User Management
+                    </a>
+                    <a class="nav-link text-white-50" href="#" onclick="alert('Feature coming soon!')">
+                        <i class="fas fa-map-marker-alt me-2"></i>Spot Management
+                    </a>
+                    <hr class="my-3 border-white-50">
+                    <a class="nav-link text-white-50" href="{{ url_for('index') }}">
+                        <i class="fas fa-home me-2"></i>Back to Site
+                    </a>
+                </nav>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-lg-9 col-md-8">
+            <div class="p-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="text-forest mb-1">Photo Approvals</h2>
+                        <p class="text-muted mb-0">Review and approve community-submitted photos</p>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="text-muted">
+                            <small>{{ photos.total }} total pending</small>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="viewMode" id="gridView" autocomplete="off" checked>
+                            <label class="btn btn-outline-secondary" for="gridView">
+                                <i class="fas fa-th"></i>
+                            </label>
+                            <input type="radio" class="btn-check" name="viewMode" id="listView" autocomplete="off">
+                            <label class="btn btn-outline-secondary" for="listView">
+                                <i class="fas fa-list"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bulk Actions -->
+                {% if photos.items %}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body py-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="checkbox" id="selectAll">
+                                    <label class="form-check-label" for="selectAll">
+                                        Select All
+                                    </label>
+                                </div>
+                                <span class="text-muted" id="selectedCount">0 selected</span>
+                            </div>
+                            <div class="bulk-actions" style="display: none;">
+                                <button class="btn btn-success btn-sm me-2" id="bulkApprove">
+                                    <i class="fas fa-check me-1"></i>Approve Selected
+                                </button>
+                                <button class="btn btn-danger btn-sm" id="bulkReject">
+                                    <i class="fas fa-times me-1"></i>Reject Selected
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Photos Grid -->
+                {% if photos.items %}
+                <div class="photos-container" id="photosGrid">
+                    <div class="row g-4">
+                        {% for photo in photos.items %}
+                        <div class="col-lg-4 col-md-6 photo-item">
+                            <div class="card border-0 shadow-sm h-100 photo-card">
+                                <div class="position-relative">
+                                    <img src="{{ url_for('uploaded_file', filename=photo.filename) }}" 
+                                         class="card-img-top photo-preview" 
+                                         style="height: 250px; object-fit: cover;" 
+                                         alt="Pending photo"
+                                         data-bs-toggle="modal" data-bs-target="#photoModal"
+                                         data-photo-id="{{ photo.id }}"
+                                         data-photo-src="{{ url_for('uploaded_file', filename=photo.filename) }}"
+                                         data-spot-name="{{ photo.nature_spot.name }}"
+                                         data-user-name="{{ photo.user.full_name or photo.user.username }}"
+                                         data-upload-date="{{ photo.created_at.strftime('%B %d, %Y at %I:%M %p') }}"
+                                         data-original-name="{{ photo.original_filename }}">
+                                    
+                                    <!-- Selection Checkbox -->
+                                    <div class="position-absolute top-0 start-0 p-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input photo-checkbox" type="checkbox" 
+                                                   value="{{ photo.id }}" id="photo{{ photo.id }}">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Photo Info Overlay -->
+                                    <div class="photo-overlay position-absolute bottom-0 start-0 w-100 p-3 text-white">
+                                        <small class="d-block">{{ photo.original_filename }}</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-nature text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                                 style="width: 40px; height: 40px;">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-1">{{ photo.user.full_name or photo.user.username }}</h6>
+                                            <p class="mb-1 text-muted small">
+                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                <a href="{{ url_for('spot_detail', id=photo.nature_spot.id) }}" 
+                                                   class="text-decoration-none">{{ photo.nature_spot.name }}</a>
+                                            </p>
+                                            <small class="text-muted">{{ photo.created_at.strftime('%b %d, %Y') }}</small>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if photo.caption %}
+                                    <p class="card-text small text-muted mb-3">{{ photo.caption }}</p>
+                                    {% endif %}
+                                    
+                                    <div class="d-grid gap-2 d-md-block">
+                                        <a href="{{ url_for('approve_photo', photo_id=photo.id) }}" 
+                                           class="btn btn-success btn-sm">
+                                            <i class="fas fa-check me-1"></i>Approve
+                                        </a>
+                                        <a href="{{ url_for('reject_photo', photo_id=photo.id) }}" 
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Are you sure you want to reject this photo? This action cannot be undone.')">
+                                            <i class="fas fa-times me-1"></i>Reject
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                {% if photos.pages > 1 %}
+                <nav aria-label="Photo approvals pagination" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if photos.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('approve_photos', page=photos.prev_num) }}">
+                                    <i class="fas fa-chevron-left me-1"></i>Previous
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for page_num in photos.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != photos.page %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('approve_photos', page=page_num) }}">{{ page_num }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_num }}</span>
+                                    </li>
+                                {% endif %}
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if photos.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('approve_photos', page=photos.next_num) }}">
+                                    Next<i class="fas fa-chevron-right ms-1"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                
+                {% else %}
+                <!-- No Pending Photos -->
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">All photos reviewed!</h4>
+                    <p class="text-muted mb-4">There are no pending photos to review at this time.</p>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-nature">
+                        <i class="fas fa-tachometer-alt me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Photo Modal -->
+<div class="modal fade" id="photoModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Photo Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <img src="" class="img-fluid rounded" id="modalImage" alt="" style="width: 100%; max-height: 600px; object-fit: contain;">
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card border-0 bg-light h-100">
+                            <div class="card-body">
+                                <h6 class="card-title text-forest">Photo Details</h6>
+                                
+                                <div class="mb-3">
+                                    <strong>Original Filename:</strong><br>
+                                    <small class="text-muted" id="modalOriginalName"></small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <strong>Uploaded by:</strong><br>
+                                    <span id="modalUserName"></span>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <strong>Nature Spot:</strong><br>
+                                    <span id="modalSpotName"></span>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <strong>Upload Date:</strong><br>
+                                    <small class="text-muted" id="modalUploadDate"></small>
+                                </div>
+                                
+                                <hr>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="#" class="btn btn-success" id="modalApproveBtn">
+                                        <i class="fas fa-check me-2"></i>Approve Photo
+                                    </a>
+                                    <a href="#" class="btn btn-danger" id="modalRejectBtn">
+                                        <i class="fas fa-times me-2"></i>Reject Photo
+                                    </a>
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Approved photos will be visible to all users. Rejected photos will be permanently deleted.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Photo modal functionality
+    const photoModal = document.getElementById('photoModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalUserName = document.getElementById('modalUserName');
+    const modalSpotName = document.getElementById('modalSpotName');
+    const modalUploadDate = document.getElementById('modalUploadDate');
+    const modalOriginalName = document.getElementById('modalOriginalName');
+    const modalApproveBtn = document.getElementById('modalApproveBtn');
+    const modalRejectBtn = document.getElementById('modalRejectBtn');
+    
+    photoModal.addEventListener('show.bs.modal', function(event) {
+        const trigger = event.relatedTarget;
+        const photoId = trigger.getAttribute('data-photo-id');
+        const photoSrc = trigger.getAttribute('data-photo-src');
+        const spotName = trigger.getAttribute('data-spot-name');
+        const userName = trigger.getAttribute('data-user-name');
+        const uploadDate = trigger.getAttribute('data-upload-date');
+        const originalName = trigger.getAttribute('data-original-name');
+        
+        modalImage.src = photoSrc;
+        modalUserName.textContent = userName;
+        modalSpotName.textContent = spotName;
+        modalUploadDate.textContent = uploadDate;
+        modalOriginalName.textContent = originalName;
+        
+        modalApproveBtn.href = `{{ url_for('approve_photo', photo_id=0) }}`.replace('0', photoId);
+        modalRejectBtn.href = `{{ url_for('reject_photo', photo_id=0) }}`.replace('0', photoId);
+        modalRejectBtn.onclick = function() {
+            return confirm('Are you sure you want to reject this photo? This action cannot be undone.');
+        };
+    });
+    
+    // View mode toggle
+    const gridView = document.getElementById('gridView');
+    const listView = document.getElementById('listView');
+    const photosGrid = document.getElementById('photosGrid');
+    const photoItems = document.querySelectorAll('.photo-item');
+    
+    gridView.addEventListener('change', function() {
+        if (this.checked) {
+            photosGrid.className = 'photos-container';
+            photosGrid.innerHTML = '<div class="row g-4">' + photosGrid.innerHTML.replace('<div class="row g-4">', '').replace('</div>', '') + '</div>';
+            photoItems.forEach(item => {
+                item.className = 'col-lg-4 col-md-6 photo-item';
+            });
+        }
+    });
+    
+    listView.addEventListener('change', function() {
+        if (this.checked) {
+            photosGrid.className = 'photos-container';
+            photosGrid.innerHTML = photosGrid.innerHTML.replace('<div class="row g-4">', '').replace('</div>', '');
+            photoItems.forEach(item => {
+                item.className = 'photo-item mb-3';
+            });
+        }
+    });
+    
+    // Bulk selection functionality
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const photoCheckboxes = document.querySelectorAll('.photo-checkbox');
+    const selectedCount = document.getElementById('selectedCount');
+    const bulkActions = document.querySelector('.bulk-actions');
+    const bulkApprove = document.getElementById('bulkApprove');
+    const bulkReject = document.getElementById('bulkReject');
+    
+    function updateBulkActions() {
+        const checkedBoxes = document.querySelectorAll('.photo-checkbox:checked');
+        const count = checkedBoxes.length;
+        
+        selectedCount.textContent = count + ' selected';
+        
+        if (count > 0) {
+            bulkActions.style.display = 'block';
+        } else {
+            bulkActions.style.display = 'none';
+        }
+        
+        // Update select all checkbox state
+        if (count === 0) {
+            selectAllCheckbox.indeterminate = false;
+            selectAllCheckbox.checked = false;
+        } else if (count === photoCheckboxes.length) {
+            selectAllCheckbox.indeterminate = false;
+            selectAllCheckbox.checked = true;
+        } else {
+            selectAllCheckbox.indeterminate = true;
+        }
+    }
+    
+    selectAllCheckbox.addEventListener('change', function() {
+        photoCheckboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        updateBulkActions();
+    });
+    
+    photoCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateBulkActions);
+    });
+    
+    // Bulk approve functionality
+    bulkApprove.addEventListener('click', function() {
+        const checkedBoxes = document.querySelectorAll('.photo-checkbox:checked');
+        const photoIds = Array.from(checkedBoxes).map(box => box.value);
+        
+        if (photoIds.length === 0) return;
+        
+        if (confirm(`Are you sure you want to approve ${photoIds.length} photo(s)?`)) {
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ url_for("approve_photos") }}';
+            
+            photoIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'approve_ids[]';
+                input.value = id;
+                form.appendChild(input);
+            });
+            
+            const csrfToken = document.querySelector('meta[name=csrf-token]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrf_token';
+                csrfInput.value = csrfToken.getAttribute('content');
+                form.appendChild(csrfInput);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+    
+    // Bulk reject functionality
+    bulkReject.addEventListener('click', function() {
+        const checkedBoxes = document.querySelectorAll('.photo-checkbox:checked');
+        const photoIds = Array.from(checkedBoxes).map(box => box.value);
+        
+        if (photoIds.length === 0) return;
+        
+        if (confirm(`Are you sure you want to reject ${photoIds.length} photo(s)? This action cannot be undone.`)) {
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ url_for("approve_photos") }}';
+            
+            photoIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'reject_ids[]';
+                input.value = id;
+                form.appendChild(input);
+            });
+            
+            const csrfToken = document.querySelector('meta[name=csrf-token]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrf_token';
+                csrfInput.value = csrfToken.getAttribute('content');
+                form.appendChild(csrfInput);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+    
+    // Add hover effects to photo cards
+    const photoCards = document.querySelectorAll('.photo-card');
+    photoCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Photo preview hover effects
+    document.querySelectorAll('.photo-preview').forEach(img => {
+        img.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.02)';
+            this.style.cursor = 'pointer';
+        });
+        
+        img.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+});
+</script>
+
+<style>
+.photo-card {
+    transition: all 0.3s ease;
+}
+
+.photo-preview {
+    transition: all 0.3s ease;
+}
+
+.photo-overlay {
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+}
+
+.bulk-actions {
+    transition: all 0.3s ease;
+}
+
+.form-check-input:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.modal-xl {
+    max-width: 1200px;
+}
+</style>
+{% endblock %}
