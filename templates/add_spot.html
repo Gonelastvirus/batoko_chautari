@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Spot - Batoko Chautari{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-nature text-white text-center">
+                    <h2 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Add New Nature Spot
+                    </h2>
+                    <p class="mb-0 mt-2">Share a hidden gem with the community</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <!-- Basic Information -->
+                            <div class="col-md-12 mb-4">
+                                <h5 class="text-forest mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>Basic Information
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                {{ form.name.label(class="form-label fw-bold") }}
+                                {{ form.name(class="form-control") }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.name.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                {{ form.district.label(class="form-label fw-bold") }}
+                                {{ form.district(class="form-select") }}
+                                {% if form.district.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.district.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                {{ form.spot_type.label(class="form-label fw-bold") }}
+                                {{ form.spot_type(class="form-select") }}
+                                {% if form.spot_type.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.spot_type.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                {{ form.difficulty_level.label(class="form-label fw-bold") }}
+                                {{ form.difficulty_level(class="form-select") }}
+                                {% if form.difficulty_level.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.difficulty_level.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-12 mb-3">
+                                {{ form.description.label(class="form-label fw-bold") }}
+                                {{ form.description(class="form-control", rows="4", placeholder="Describe the natural beauty, accessibility, and what makes this spot special...") }}
+                                {% if form.description.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.description.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="row">
+                            <!-- Location Information -->
+                            <div class="col-md-12 mb-4">
+                                <h5 class="text-forest mb-3">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Location Details
+                                </h5>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Tip:</strong> You can find coordinates using Google Maps. Right-click on the location and select the coordinates.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                {{ form.latitude.label(class="form-label fw-bold") }}
+                                {{ form.latitude(class="form-control", step="any", placeholder="e.g., 27.7172") }}
+                                {% if form.latitude.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.latitude.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                {{ form.longitude.label(class="form-label fw-bold") }}
+                                {{ form.longitude(class="form-control", step="any", placeholder="e.g., 85.3240") }}
+                                {% if form.longitude.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.longitude.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                {{ form.altitude.label(class="form-label fw-bold") }}
+                                {{ form.altitude(class="form-control", placeholder="e.g., 1400") }}
+                                <small class="text-muted">Optional - in meters above sea level</small>
+                                {% if form.altitude.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.altitude.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                {{ form.entry_fee.label(class="form-label fw-bold") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">NPR</span>
+                                    {{ form.entry_fee(class="form-control", step="any", placeholder="0") }}
+                                </div>
+                                <small class="text-muted">Optional - leave blank if free</small>
+                                {% if form.entry_fee.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.entry_fee.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="row">
+                            <!-- Additional Information -->
+                            <div class="col-md-12 mb-4">
+                                <h5 class="text-forest mb-3">
+                                    <i class="fas fa-calendar-alt me-2"></i>Additional Information
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-12 mb-3">
+                                {{ form.best_season.label(class="form-label fw-bold") }}
+                                {{ form.best_season(class="form-control", placeholder="e.g., October to March, Spring and Autumn") }}
+                                <small class="text-muted">Optional - when is the best time to visit?</small>
+                                {% if form.best_season.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.best_season.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Review Process:</strong> Your submission will be reviewed by our team before being published. This helps ensure quality and accuracy for all users.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('discover') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            {{ form.submit(class="btn btn-nature btn-lg") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
+{% endblock %}

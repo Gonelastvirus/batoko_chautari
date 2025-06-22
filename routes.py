@@ -250,6 +250,31 @@ def profile(username=None):
     return render_template('profile.html', user=user, visits=visits, reviews=reviews,
                          bookmarks=bookmarks, photos=photos, stats=stats)
 
+@app.route('/profile/edit', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = ProfileEditForm()
+    
+    if form.validate_on_submit():
+        current_user.full_name = form.full_name.data
+        current_user.bio = form.bio.data
+        
+        # Handle profile image upload
+        if form.profile_image.data:
+            image_path = save_uploaded_file(form.profile_image.data, 'profiles')
+            if image_path:
+                current_user.profile_image = image_path
+        
+        db.session.commit()
+        flash('Your profile has been updated!', 'success')
+        return redirect(url_for('profile'))
+    
+    # Pre-populate form with current data
+    form.full_name.data = current_user.full_name
+    form.bio.data = current_user.bio
+    
+    return render_template('edit_profile.html', form=form, title='Edit Profile')
+
 @app.route('/bookmark/<int:spot_id>')
 @login_required
 def bookmark_spot(spot_id):
@@ -318,6 +343,35 @@ def update_road(spot_id):
         flash('Error updating road status. Please check your input.', 'danger')
     
     return redirect(url_for('spot_detail', id=spot_id))
+
+@app.route('/add_spot', methods=['GET', 'POST'])
+@login_required
+def add_spot():
+    form = AddSpotForm()
+    
+    if form.validate_on_submit():
+        spot = NatureSpot(
+            name=form.name.data,
+            description=form.description.data,
+            district=form.district.data,
+            latitude=form.latitude.data,
+            longitude=form.longitude.data,
+            altitude=form.altitude.data,
+            spot_type=form.spot_type.data,
+            difficulty_level=form.difficulty_level.data,
+            best_season=form.best_season.data,
+            entry_fee=form.entry_fee.data,
+            is_verified=False  # Requires admin approval
+        )
+        
+        db.session.add(spot)
+        award_points(current_user, 'spot_submission')
+        db.session.commit()
+        
+        flash('Thank you for submitting a new spot! It will be reviewed by our team before being published.', 'success')
+        return redirect(url_for('discover'))
+    
+    return render_template('add_spot.html', form=form, title='Add New Spot')
 
 @app.route('/support')
 def support():

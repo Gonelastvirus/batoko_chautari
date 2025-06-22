@@ -39,6 +39,13 @@
                             <i class="fas fa-search me-1"></i>Discover
                         </a>
                     </li>
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('add_spot') }}">
+                            <i class="fas fa-plus-circle me-1"></i>Add Spot
+                        </a>
+                    </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('leaderboard') }}">
                             <i class="fas fa-trophy me-1"></i>Leaderboard
@@ -62,6 +69,9 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ url_for('profile') }}">
                                     <i class="fas fa-user me-2"></i>My Profile
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('edit_profile') }}">
+                                    <i class="fas fa-user-edit me-2"></i>Edit Profile
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 {% if current_user.is_admin %}

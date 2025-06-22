@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - Batoko Chautari{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-nature text-white text-center">
+                    <h2 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>
+                        Edit Profile
+                    </h2>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="text-center mb-4">
+                            {% if current_user.profile_image %}
+                                <img src="{{ url_for('uploaded_file', filename=current_user.profile_image) }}" 
+                                     class="rounded-circle mb-3" width="120" height="120" 
+                                     style="object-fit: cover;" alt="Profile Image">
+                            {% else %}
+                                <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center mb-3" 
+                                     style="width: 120px; height: 120px;">
+                                    <i class="fas fa-user fa-3x text-white"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.full_name.label(class="form-label fw-bold") }}
+                            {{ form.full_name(class="form-control") }}
+                            {% if form.full_name.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.full_name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.bio.label(class="form-label fw-bold") }}
+                            {{ form.bio(class="form-control", rows="4", placeholder="Tell us about yourself, your travel experiences, favorite nature spots...") }}
+                            {% if form.bio.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.bio.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            {{ form.profile_image.label(class="form-label fw-bold") }}
+                            {{ form.profile_image(class="form-control") }}
+                            <small class="text-muted">Upload a new profile image (JPG, PNG only)</small>
+                            {% if form.profile_image.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.profile_image.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('profile') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            {{ form.submit(class="btn btn-nature") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
